@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 
-var json;
+var json
 var server = "http://localhost/kubernetes/"
 var api = "api/v1"
 var url = `${server}${api}/pods`
@@ -16,27 +16,50 @@ function updateData() {
     return response.json()
   })
   .then(function(data) {
-    json = JSON.stringify(data)
+    json = data
   });
 }
 
 class Data extends Component {
   render() {
-    return <pre>{json}</pre>
+    updateData();
+
+    let pods = []
+
+    if (json) {
+      console.log(JSON.stringify(json.items))
+
+      for (var key in json.items) {
+        if (json.items.hasOwnProperty(key)) {
+          let pod = json.items[key]
+
+          let p = {
+            name:       pod.metadata.name,
+            namespace:  pod.metadata.namespace,
+            labels:     pod.metadata.labels,
+            nodeName:   pod.spec.nodeName,
+            containers: pod.status.containerStatus,
+            state:      pod.status.phase
+          }
+          pods.push(p)
+        }
+      }
+    }
+
+    return <pre>{JSON.stringify(pods, null, 2)}</pre>
   }
 }
 
 class Pods extends Component {
   constructor(props) {
     super(props);
-    updateData();
     this.state = {text: <Data />};
   }
 
   componentDidMount() {
     this.timerID = setInterval(
       () => this.tick(),
-      10000
+      2000
     );
   }
 
@@ -45,10 +68,7 @@ class Pods extends Component {
   }
 
   tick() {
-    updateData();
-    this.setState({
-      text: <Data />
-    });
+    this.setState({ text: <Data /> });
   }
 
   render() {
