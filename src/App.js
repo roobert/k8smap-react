@@ -27,8 +27,6 @@ class Data extends Component {
     let pods = []
 
     if (json) {
-      console.log(JSON.stringify(json.items))
-
       for (var key in json.items) {
         if (json.items.hasOwnProperty(key)) {
           let pod = json.items[key]
