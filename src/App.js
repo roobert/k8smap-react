@@ -20,11 +20,17 @@ function updateData() {
   });
 }
 
-class Pods extends React.Component {
+class Data extends Component {
+  render() {
+    return <pre>{json}</pre>
+  }
+}
+
+class Pods extends Component {
   constructor(props) {
     super(props);
     updateData();
-    this.state = {text: json};
+    this.state = {text: <Data />};
   }
 
   componentDidMount() {
@@ -41,7 +47,7 @@ class Pods extends React.Component {
   tick() {
     updateData();
     this.setState({
-      text: json
+      text: <Data />
     });
   }
 
