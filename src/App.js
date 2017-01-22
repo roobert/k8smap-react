@@ -34,11 +34,9 @@ function pruneContainerJSON(container) {
 function prunePodJSON(pod) {
   let containers = [];
 
-  for (var k in pod.status.containerStatuses) {
-    if (pod.status.containerStatuses.hasOwnProperty(k)) {
-      containers.push(
-        pruneContainerJSON(pod.status.containerStatuses[k])
-      )
+  for (var key in pod.status.containerStatuses) {
+    if (pod.status.containerStatuses.hasOwnProperty(key)) {
+      containers.push(pruneContainerJSON(pod.status.containerStatuses[key]))
     }
   }
 
@@ -77,10 +75,7 @@ class Pods extends Component {
   }
 
   componentDidMount() {
-    this.timerID = setInterval(
-      () => this.tick(),
-      2000
-    );
+    this.timerID = setInterval(() => this.tick(), 2000);
   }
 
   componentWillUnmount() {
@@ -93,9 +88,7 @@ class Pods extends Component {
 
   render() {
     return (
-      <div>
-        {this.state.text}
-      </div>
+      <div>{this.state.text}</div>
     );
   }
 }
