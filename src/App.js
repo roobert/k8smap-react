@@ -6,7 +6,6 @@ var server = "http://localhost/kubernetes/"
 var api = "api/v1"
 var url = `${server}${api}/pods`
 
-
 function updateData() {
   fetch(url,
     {
@@ -16,8 +15,8 @@ function updateData() {
   .then(function(response) {
     return response.json()
   })
-  .then(function(json) {
-    json = JSON.stringify(json)
+  .then(function(data) {
+    json = JSON.stringify(data)
   });
 }
 
