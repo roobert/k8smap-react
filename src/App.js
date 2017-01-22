@@ -6,7 +6,7 @@ var server = "http://localhost/kubernetes/"
 var api = "api/v1"
 var url = `${server}${api}/pods`
 
-function updateData() {
+function updateJSON() {
   fetch(url,
     {
       mode: "no-cors",
@@ -50,21 +50,25 @@ function prunePodJSON(pod) {
   }
 }
 
-class Data extends Component {
-  render() {
-    updateData();
+function podsJSON(props) {
+  let pods = []
 
-    let pods = []
-
-    if (json) {
-      for (var key in json.items) {
-        if (json.items.hasOwnProperty(key)) {
-          pods.push(prunePodJSON(json.items[key]))
-        }
+  if (json) {
+    for (var key in json.items) {
+      if (json.items.hasOwnProperty(key)) {
+        pods.push(prunePodJSON(json.items[key]))
       }
     }
+  }
 
-    return <pre>{JSON.stringify(pods, null, 2)}</pre>
+  return pods
+}
+
+class Data extends Component {
+  render() {
+    updateJSON();
+
+    return <pre>{JSON.stringify(podsJSON(), null, 2)}</pre>
   }
 }
 
