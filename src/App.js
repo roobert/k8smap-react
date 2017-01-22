@@ -59,7 +59,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-fetch">
-        <Pods />
+          <Pods />
         </div>
       </div>
     );
