@@ -20,6 +20,38 @@ function updateData() {
   });
 }
 
+function pruneContainerJSON(container) {
+  let running = (("running" in container.ready.hasOwnProperty) === false);
+
+  return {
+    name:    container.name,
+    running: running,
+    ready:   container.ready,
+    image:   container.image
+  }
+}
+
+function prunePodJSON(pod) {
+  let containers = [];
+
+  for (var k in pod.status.containerStatuses) {
+    if (pod.status.containerStatuses.hasOwnProperty(k)) {
+      containers.push(
+        pruneContainerJSON(pod.status.containerStatuses[k])
+      )
+    }
+  }
+
+  return {
+    name:       pod.metadata.name,
+    namespace:  pod.metadata.namespace,
+    labels:     pod.metadata.labels,
+    nodeName:   pod.spec.nodeName,
+    state:      pod.status.phase,
+    containers: containers
+  }
+}
+
 class Data extends Component {
   render() {
     updateData();
@@ -29,17 +61,7 @@ class Data extends Component {
     if (json) {
       for (var key in json.items) {
         if (json.items.hasOwnProperty(key)) {
-          let pod = json.items[key]
-
-          let p = {
-            name:       pod.metadata.name,
-            namespace:  pod.metadata.namespace,
-            labels:     pod.metadata.labels,
-            nodeName:   pod.spec.nodeName,
-            containers: pod.status.containerStatus,
-            state:      pod.status.phase
-          }
-          pods.push(p)
+          pods.push(prunePodJSON(json.items[key]))
         }
       }
     }
