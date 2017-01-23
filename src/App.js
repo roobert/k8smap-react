@@ -1,12 +1,42 @@
+// redux
+import { createStore } from 'redux';
+
+function k8s(state = {}, action) {
+  switch (action.type) {
+    case 'UPDATE':
+      // update state
+      return state;
+    default:
+      return state;
+  }
+}
+
+//let store = createStore(k8s)
+const store = createStore(k8s, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+
+
+// react
 import React, { Component } from 'react';
 import './App.css';
 
-var json
 var server = "http://localhost/kubernetes/"
-var api = "api/v1"
-var url = `${server}${api}/pods`
 
-function updateJSON() {
+// main
+
+function fetchFromAPI(path, version: 'stable') {
+  let APIPath = function(version) {
+      switch(version) {
+      case 'beta':
+        return "apis/extensions/v1beta1/"
+      case 'stable':
+        return "api/v1/"
+      default:
+        return "api/v1/"
+    }
+  }
+
+  let url = `${server}${APIPath}${path}`
+
   fetch(url,
     {
       mode: "no-cors",
@@ -16,7 +46,7 @@ function updateJSON() {
     return response.json()
   })
   .then(function(data) {
-    json = data
+    k8s.update(data);
   });
 }
 
@@ -64,18 +94,10 @@ function podsJSON(props) {
   return pods
 }
 
-class Data extends Component {
-  render() {
-    updateJSON();
-
-    return <pre>{JSON.stringify(podsJSON(), null, 2)}</pre>
-  }
-}
-
 class Pods extends Component {
   constructor(props) {
     super(props);
-    this.state = {text: <Data />};
+    //this.state = {text: <Data />};
   }
 
   componentDidMount() {
@@ -86,23 +108,55 @@ class Pods extends Component {
     clearInterval(this.timerID);
   }
 
-  tick() {
-    this.setState({ text: <Data /> });
-  }
+  //tick() {
+  //  this.setState({ text: <Data /> });
+  //}
 
-  render() {
-    return (
-      <div>{this.state.text}</div>
-    );
-  }
+//  render() {
+//    return (
+//      <div>{this.state.text}</div>
+//    );
+//  }
 }
+
+//class Pods extends Component {
+//  constructor(props) {
+//    super(props);
+//    this.state = {text: <Data />};
+//  }
+//
+//  componentDidMount() {
+//    this.timerID = setInterval(() => this.tick(), 2000);
+//  }
+//
+//  componentWillUnmount() {
+//    clearInterval(this.timerID);
+//  }
+//
+//  tick() {
+//    this.setState({ text: <Data /> });
+//  }
+//
+//  render() {
+//    return (
+//      <div>{this.state.text}</div>
+//    );
+//  }
+//}
+
+//class Data extends Component {
+//  render() {
+//    updateJSON();
+//
+//    return <pre>{JSON.stringify(podsJSON(), null, 2)}</pre>
+//  }
+//}
 
 class App extends Component {
   render() {
     return (
       <div className="App">
         <div className="App-fetch">
-          <Pods />
         </div>
       </div>
     );
