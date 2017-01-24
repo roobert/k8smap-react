@@ -1,21 +1,32 @@
 // redux
-import { createStore } from 'redux';
 
 function k8s(state = {}, action) {
   switch (action.type) {
     case 'UPDATE':
-      // update state
+      console.log(`updating state for path: ${action.path}`);
+      state[action.path] = action.state
       return state;
+
     default:
+      console.log("fetching state");
       return state;
   }
 }
 
-//let store = createStore(k8s)
-const store = createStore(k8s, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+import { createStore } from 'redux';
 
+function storeCreator() {
+  if (process.env.NODE_ENV !== "production") {
+    return createStore(k8s, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+  } else {
+    return createStore(k8s)
+  }
+}
+
+var store = storeCreator()
 
 // react
+
 import React, { Component } from 'react';
 import './App.css';
 
@@ -23,9 +34,9 @@ var server = "http://localhost/kubernetes/"
 
 // main
 
-function fetchFromAPI(path, version: 'stable') {
-  let APIPath = function(version) {
-      switch(version) {
+function fetchFromAPI(path, version: "stable") {
+  function APIPath(version) {
+    switch(version) {
       case 'beta':
         return "apis/extensions/v1beta1/"
       case 'stable':
@@ -35,7 +46,7 @@ function fetchFromAPI(path, version: 'stable') {
     }
   }
 
-  let url = `${server}${APIPath}${path}`
+  let url = `${server}${APIPath(version)}${path}`;
 
   fetch(url,
     {
@@ -46,8 +57,51 @@ function fetchFromAPI(path, version: 'stable') {
     return response.json()
   })
   .then(function(data) {
-    k8s.update(data);
+    store.dispatch({
+      type:  `UPDATE`,
+      path:  path,
+      state: data
+    });
   });
+}
+
+class StoreUpdater extends Component {
+  constructor(props) {
+    super(props);
+    this.path = props.path;
+  }
+
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    fetchFromAPI(this.path);
+  }
+
+  render() { return null }
+}
+
+class PageUpdater extends Component {
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    console.log("updating page?");
+    podsJSON();
+    console.log("page updated?");
+  }
+
+  render() { return null }
 }
 
 function pruneContainerJSON(container) {
@@ -80,84 +134,40 @@ function prunePodJSON(pod) {
   }
 }
 
-function podsJSON(props) {
-  let pods = []
+function podsJSON() {
+  let data = store.getState();
+  //let pods = data["pods"];
+  let pods = data;
+  console.log("podsJSON!!!")
 
-  if (json) {
-    for (var key in json.items) {
-      if (json.items.hasOwnProperty(key)) {
-        pods.push(prunePodJSON(json.items[key]))
-      }
-    }
-  }
+  //console.log(JSON.stringify(pods));
+
+  //if (pods) {
+  //  for (var key in pods.items) {
+  //    if (pods.items.hasOwnProperty(key)) {
+  //      pods.push(prunePodJSON(pods.items[key]))
+  //    }
+  //  }
+  //}
 
   return pods
 }
 
 class Pods extends Component {
-  constructor(props) {
-    super(props);
-    //this.state = {text: <Data />};
+  render() {
+    console.log("calling Pods");
+    return <div>{JSON.stringify(podsJSON())}</div>
   }
-
-  componentDidMount() {
-    this.timerID = setInterval(() => this.tick(), 2000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
-
-  //tick() {
-  //  this.setState({ text: <Data /> });
-  //}
-
-//  render() {
-//    return (
-//      <div>{this.state.text}</div>
-//    );
-//  }
 }
-
-//class Pods extends Component {
-//  constructor(props) {
-//    super(props);
-//    this.state = {text: <Data />};
-//  }
-//
-//  componentDidMount() {
-//    this.timerID = setInterval(() => this.tick(), 2000);
-//  }
-//
-//  componentWillUnmount() {
-//    clearInterval(this.timerID);
-//  }
-//
-//  tick() {
-//    this.setState({ text: <Data /> });
-//  }
-//
-//  render() {
-//    return (
-//      <div>{this.state.text}</div>
-//    );
-//  }
-//}
-
-//class Data extends Component {
-//  render() {
-//    updateJSON();
-//
-//    return <pre>{JSON.stringify(podsJSON(), null, 2)}</pre>
-//  }
-//}
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-fetch">
-        </div>
+        <StoreUpdater path="nodes" />
+        <StoreUpdater path="pods" />
+        <Pods />
+        <PageUpdater />
       </div>
     );
   }
