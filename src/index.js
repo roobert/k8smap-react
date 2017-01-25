@@ -12,7 +12,9 @@ import { storeUpdater } from './lib/api';
 
 const store = storeCreator();
 
-storeUpdater(store);
+const interval = 3;
+
+storeUpdater(store, interval);
 
 ReactDOM.render(
   <Provider store={store}>

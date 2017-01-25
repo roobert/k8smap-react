@@ -24,8 +24,13 @@ const dispatchAction = (store, action) => data =>
     state: data.items
   });
 
-
-export const storeUpdater = (store) => {
+const updaters = (store) => {
+  console.log("updating state");
   fetchFromAPI('pods').then(dispatchAction(store, 'SET_PODS'));
   fetchFromAPI('nodes').then(dispatchAction(store, 'SET_NODES'));
+}
+
+export const storeUpdater = (store, interval) => {
+  let seconds = interval * 1000;
+  setInterval(function() { updaters(store) }, seconds);
 }
