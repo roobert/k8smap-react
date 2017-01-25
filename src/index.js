@@ -12,7 +12,7 @@ import { storeUpdater } from './lib/api';
 
 const store = storeCreator();
 
-storeUpdater();
+storeUpdater(store);
 
 ReactDOM.render(
   <Provider store={store}>

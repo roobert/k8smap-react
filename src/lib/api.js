@@ -11,22 +11,21 @@ const getAPIPath = version => {
   }
 }
 
-const fetchFromAPI = (path, version = 'stable') => {
+const fetchFromAPI = (path, version = 'stable') =>
   fetch(`${server}${getAPIPath(version)}${path}`, {
     mode: "no-cors",
     method: "GET"
   })
   .then(response => response.json());
-}
 
-const dispatchAction = action => data => {
+const dispatchAction = (store, action) => data =>
   store.dispatch({
     type:  action,
     state: data.items
   });
-}
 
-export const storeUpdater = () => {
-  fetchFromAPI('pods').then(dispatchAction('SET_PODS'));
-  fetchFromAPI('nodes').then(dispatchAction('SET_NODES'));
+
+export const storeUpdater = (store) => {
+  fetchFromAPI('pods').then(dispatchAction(store, 'SET_PODS'));
+  fetchFromAPI('nodes').then(dispatchAction(store, 'SET_NODES'));
 }
