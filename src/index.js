@@ -13,7 +13,7 @@ import { data } from './data';
 
 const store = storeCreator();
 
-const interval = 3;
+const interval = 5;
 
 storeUpdater(store, data, interval);
 

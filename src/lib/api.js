@@ -43,6 +43,8 @@ const updaters = (data, store) => {
       console.log(`cluster: ${cluster["name"]}`)
 
       apiPaths.forEach(apiPath => {
+        console.log(`updating path: ${apiPath}`);
+
         let clusterPath = `/k8s/${project.name}/${cluster.region}/${cluster.zone}/${cluster.name}/`;
 
         fetchFromAPI(clusterPath, apiPath)

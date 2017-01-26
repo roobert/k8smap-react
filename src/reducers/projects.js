@@ -31,7 +31,6 @@ export default function projects(
     case 'UPDATE':
       console.log("updating store");
       let projects = state;
-      console.log(projects);
 
       return state.map(project => {
         if (project.name === params.project) {
@@ -41,10 +40,10 @@ export default function projects(
                (cluster.name   === params.cluster)) {
                cluster[params.apiPath] = params.data;
             }
-            return cluster;
+            return Object.assign({}, cluster);
           });
         }
-        return project;
+        return Object.assign({}, project);
       });
 
     default:
