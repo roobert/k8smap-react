@@ -1,4 +1,4 @@
-export const server = "http://localhost/kubernetes/"
+export const server = "http://localhost"
 
 const getAPIPath = version => {
   switch(version) {
@@ -11,26 +11,52 @@ const getAPIPath = version => {
   }
 }
 
-const fetchFromAPI = (path, version = 'stable') =>
-  fetch(`${server}${getAPIPath(version)}${path}`, {
+const fetchFromAPI = (clusterPath, path, version = 'stable') =>
+  fetch(`${server}${clusterPath}${getAPIPath(version)}${path}`, {
     mode: "no-cors",
     method: "GET"
   })
   .then(response => response.json());
 
-const dispatchAction = (store, action) => data =>
-  store.dispatch({
-    type:  action,
-    state: data.items
-  });
+const dispatchAction = (store, action, project, cluster, clusterRegion, clusterZone) => data => {
+  const apiPath = action.split("_")[1].toLowerCase();
 
-const updaters = (store) => {
-  console.log("updating state");
-  fetchFromAPI('pods').then(dispatchAction(store, 'SET_PODS'));
-  fetchFromAPI('nodes').then(dispatchAction(store, 'SET_NODES'));
+  store.dispatch({
+    type:          action,
+    apiPath:       apiPath,
+    data:          data,
+    project:       project,
+    cluster:       cluster,
+    clusterRegion: clusterRegion,
+    clusterZone:   clusterZone
+  });
 }
 
-export const storeUpdater = (store, interval) => {
+const updaters = (data, store) => {
+  console.log("updating state");
+
+  var apiPaths = [ "pods", "nodes" ];
+
+  data.forEach(project => {
+    console.log(`project: ${project["name"]}`)
+
+    project.clusters.forEach(cluster => {
+      console.log(`cluster: ${cluster["name"]}`)
+
+      apiPaths.forEach(apiPath => {
+        let clusterPath = `/k8s/${project.name}/${cluster.region}/${cluster.zone}/${cluster.name}/`;
+
+        let action = `SET_${apiPath.toUpperCase()}`
+
+        fetchFromAPI(clusterPath, apiPath)
+          .then(dispatchAction(store, action, project.name, cluster.name, cluster.region, cluster.zone));
+      });
+    });
+  });
+}
+
+export const storeUpdater = (store, data, interval) => {
   let seconds = interval * 1000;
-  setInterval(function() { updaters(store) }, seconds);
+
+  setInterval(function() { updaters(data, store) }, seconds);
 }

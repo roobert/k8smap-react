@@ -9,16 +9,18 @@ import App from './components/App';
 
 import { storeCreator } from './lib/store';
 import { storeUpdater } from './lib/api';
+import { data } from './data';
 
 const store = storeCreator();
 
 const interval = 3;
 
-storeUpdater(store, interval);
+storeUpdater(store, data, interval);
 
 ReactDOM.render(
   <Provider store={store}>
     <App />
   </Provider>,
+
   document.getElementById('root')
 );
