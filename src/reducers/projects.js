@@ -32,10 +32,10 @@ export default function projects(
       console.log("updating..");
 
       let projects = state.map(() => project, {
-        if (project.name == params.project) &&
+        if (project.name          == params.project) &&
            (project.clusterRegion == params.clusterRegion) &&
-           (project.clusterZone == params.clusterZone) &&
-           (project.cluster = paramscluster) {
+           (project.clusterZone   == params.clusterZone) &&
+           (project.cluster       == paramscluster) {
            project[params.path] = params.data;
          }
          return project;
