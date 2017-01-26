@@ -29,18 +29,23 @@ export default function projects(
 ) {
   switch (params.type) {
     case 'UPDATE':
-      console.log("updating..");
+      console.log("updating store");
+      let projects = state;
+      console.log(projects);
 
-      let projects = state.map(() => project, {
-        if (project.name          == params.project) &&
-           (project.clusterRegion == params.clusterRegion) &&
-           (project.clusterZone   == params.clusterZone) &&
-           (project.cluster       == paramscluster) {
-           project[params.path] = params.data;
-         }
-         return project;
-      }
-      return projects;
+      return  state.map(() => project, {
+        if (project.name == params.project) {
+          return project.clusters.map(() => cluster {
+            if (cluster.region == params.clusterRegion) &&
+               (cluster.zone   == params.clusterZone) &&
+               (cluster.name   == paramscluster) {
+               cluster[params.apiPath] = params.data;
+            }
+            return cluster;
+          });
+        }
+        return project;
+      });
 
     default:
       return state;
