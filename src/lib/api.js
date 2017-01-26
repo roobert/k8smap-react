@@ -45,8 +45,6 @@ const updaters = (data, store) => {
       apiPaths.forEach(apiPath => {
         let clusterPath = `/k8s/${project.name}/${cluster.region}/${cluster.zone}/${cluster.name}/`;
 
-        let action = `SET_${apiPath.toUpperCase()}`
-
         fetchFromAPI(clusterPath, apiPath)
           .then(dispatchAction(store, apiPath, project.name, cluster.name, cluster.region, cluster.zone));
       });

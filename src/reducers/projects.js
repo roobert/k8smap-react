@@ -33,12 +33,12 @@ export default function projects(
       let projects = state;
       console.log(projects);
 
-      return state.map(() => project, {
-        if (project.name == params.project) {
-          return project.clusters.map(() => cluster {
-            if (cluster.region == params.clusterRegion) &&
-               (cluster.zone   == params.clusterZone) &&
-               (cluster.name   == paramscluster) {
+      return state.map(project => {
+        if (project.name === params.project) {
+          return project.clusters.map(cluster => {
+            if ((cluster.region === params.clusterRegion) &&
+               (cluster.zone   === params.clusterZone) &&
+               (cluster.name   === params.cluster)) {
                cluster[params.apiPath] = params.data;
             }
             return cluster;
