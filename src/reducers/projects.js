@@ -33,7 +33,7 @@ export default function projects(
       let projects = state;
       console.log(projects);
 
-      return  state.map(() => project, {
+      return state.map(() => project, {
         if (project.name == params.project) {
           return project.clusters.map(() => cluster {
             if (cluster.region == params.clusterRegion) &&
