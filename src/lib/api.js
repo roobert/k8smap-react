@@ -18,11 +18,10 @@ const fetchFromAPI = (clusterPath, path, version = 'stable') =>
   })
   .then(response => response.json());
 
-const dispatchAction = (store, action, project, cluster, clusterRegion, clusterZone) => data => {
-  const apiPath = action.split("_")[1].toLowerCase();
-
+const dispatchAction = (store, apiPath, project, cluster, clusterRegion, clusterZone) => data => {
+  console.log("dispatching");
   store.dispatch({
-    type:          action,
+    type:          'UPDATE',
     apiPath:       apiPath,
     data:          data,
     project:       project,
@@ -49,7 +48,7 @@ const updaters = (data, store) => {
         let action = `SET_${apiPath.toUpperCase()}`
 
         fetchFromAPI(clusterPath, apiPath)
-          .then(dispatchAction(store, action, project.name, cluster.name, cluster.region, cluster.zone));
+          .then(dispatchAction(store, apiPath, project.name, cluster.name, cluster.region, cluster.zone));
       });
     });
   });

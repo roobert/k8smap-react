@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux';
-import nodes from './nodes'
-import pods from './pods'
+import projects from './projects'
 
 export default combineReducers({
-  nodes,
-  pods
+  projects
 });
 
 
