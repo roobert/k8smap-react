@@ -1,8 +1,7 @@
-export default function projects(
-  state = [
-    {
-      name: "bw-test0",
-      clusters: [
+const projectsInitialState = [
+  {
+    name: "bw-test0",
+    clusters: [
       {
         name:   "cluster0",
         region: "europe-west1",
@@ -10,21 +9,25 @@ export default function projects(
         nodes:  [],
         pods:   []
       }
-      ]
-    },
-    {
-      name: "bw-dev-vizia0",
-      clusters: [
-        {
-          name:   "bw-dev-vizia0",
-          region: "europe-west1",
-          zone:   "b",
-          nodes:  [],
-          pods:   []
-        }
-      ]
-    }
-  ],
+    ]
+  },
+  {
+    name: "bw-dev-vizia0",
+    clusters: [
+      {
+        name:   "bw-dev-vizia0",
+        region: "europe-west1",
+        zone:   "b",
+        nodes:  [],
+        pods:   []
+      }
+    ]
+  }
+]
+
+
+export default function projects(
+  state = projectsInitialState,
   params
 ) {
   switch (params.type) {
