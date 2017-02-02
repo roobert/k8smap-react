@@ -11,6 +11,45 @@ const getAPIPath = version => {
   }
 }
 
+function projectsAddPods(project, clusterRegion, clusterZone, cluster, pods) {
+  return {
+    //type: 'UPDATE_PODS',
+    //payload: {
+    //   id: `${project}_${region}_${zone}_${cluster}`,
+    //   data: pods,
+    //},
+    type: 'UPDATE_PODS',
+    payload: {
+       project:       project,
+       cluster:       cluster,
+       clusterRegion: clusterRegion,
+       clusterZone:   clusterZone,
+       data: pods
+    },
+	};
+}
+
+function projectsAddNodes(project, clusterRegion, clusterZone, cluster, nodes) {
+  console.log("projectsAddNodes")
+  console.log(project);
+  console.log(clusterRegion);
+
+  return {
+    //payload: {
+    //   id: `${project}_${region}_${zone}_${cluster}`,
+    //   data: nodes,
+    //},
+    type: 'UPDATE_NODES',
+    payload: {
+       project:       project,
+       cluster:       cluster,
+       clusterRegion: clusterRegion,
+       clusterZone:   clusterZone,
+       data: nodes
+    },
+	};
+}
+
 const fetchFromAPI = (clusterPath, path, version = 'stable') =>
   fetch(`${server}${clusterPath}${getAPIPath(version)}${path}`, {
     mode: "no-cors",
@@ -20,21 +59,37 @@ const fetchFromAPI = (clusterPath, path, version = 'stable') =>
 
 const dispatchAction = (store, apiPath, project, cluster, clusterRegion, clusterZone) => data => {
   console.log("dispatching");
-  store.dispatch({
-    type:          'UPDATE',
-    apiPath:       apiPath,
-    data:          data,
-    project:       project,
-    cluster:       cluster,
-    clusterRegion: clusterRegion,
-    clusterZone:   clusterZone
-  });
+
+  switch(apiPath) {
+    case('nodes'):
+      var nodes = projectsAddNodes(project, clusterRegion, clusterZone, cluster, nodes)
+      console.log(nodes);
+      return store.dispatch(nodes);
+
+    case('pods'):
+      var pods = projectsAddPods(project, clusterRegion, clusterZone, cluster, data);
+      console.log(pods);
+      return store.dispatch(pods);
+
+    default:
+      console.log(`unknown api path: ${apiPath}`)
+  }
+
+  //store.dispatch({
+  //  type:          'UPDATE',
+  //  apiPath:       apiPath,
+  //  data:          data,
+  //  project:       project,
+  //  cluster:       cluster,
+  //  clusterRegion: clusterRegion,
+  //  clusterZone:   clusterZone
+  //});
 }
 
 const updaters = (data, store) => {
   console.log("updating state");
 
-  var apiPaths = [ "pods", "nodes" ];
+  var apiPaths = [ "nodes", "pods" ];
 
   data.forEach(project => {
     console.log(`project: ${project["name"]}`)
