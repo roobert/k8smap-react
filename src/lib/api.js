@@ -11,79 +11,54 @@ const getAPIPath = version => {
   }
 }
 
-function projectsAddPods(project, clusterRegion, clusterZone, cluster, pods) {
-  return {
-    //type: 'UPDATE_PODS',
-    //payload: {
-    //   id: `${project}_${region}_${zone}_${cluster}`,
-    //   data: pods,
-    //},
-    type: 'UPDATE_PODS',
-    payload: {
-       project:       project,
-       cluster:       cluster,
-       clusterRegion: clusterRegion,
-       clusterZone:   clusterZone,
-       data: pods
-    },
-	};
-}
+const fetchFromAPI = (clusterPath, apiPath, version = 'stable') => {
+  const url = `${server}${clusterPath}${getAPIPath(version)}${apiPath}`
 
-function projectsAddNodes(project, clusterRegion, clusterZone, cluster, nodes) {
-  console.log("projectsAddNodes")
-  console.log(project);
-  console.log(clusterRegion);
+  console.log(`fetching: ${url}`);
 
-  return {
-    //payload: {
-    //   id: `${project}_${region}_${zone}_${cluster}`,
-    //   data: nodes,
-    //},
-    type: 'UPDATE_NODES',
-    payload: {
-       project:       project,
-       cluster:       cluster,
-       clusterRegion: clusterRegion,
-       clusterZone:   clusterZone,
-       data: nodes
-    },
-	};
-}
-
-const fetchFromAPI = (clusterPath, path, version = 'stable') =>
-  fetch(`${server}${clusterPath}${getAPIPath(version)}${path}`, {
+  fetch(url, {
     mode: "no-cors",
     method: "GET"
+  }).then(function(response) {
+    if (response.headers.get("content-type").indexOf("application/json") !== -1) {
+      return response.json();
+    } else {
+      throw new TypeError(`response from url was not type application/json: ${url}`);
+    }
   })
-  .then(response => response.json());
+  .then(
+    response => response()
+  );
+}
+
+function projectsAction(type, project, clusterRegion, clusterZone, cluster, data) {
+  return {
+    type: type,
+    payload: {
+       project:       project,
+       cluster:       cluster,
+       clusterRegion: clusterRegion,
+       clusterZone:   clusterZone,
+       data: data
+    },
+	};
+}
 
 const dispatchAction = (store, apiPath, project, cluster, clusterRegion, clusterZone) => data => {
   console.log("dispatching");
 
   switch(apiPath) {
     case('nodes'):
-      var nodes = projectsAddNodes(project, clusterRegion, clusterZone, cluster, nodes)
-      console.log(nodes);
+      var nodes = projectsAction('UPDATE_NODES', project, clusterRegion, clusterZone, cluster, nodes)
       return store.dispatch(nodes);
 
     case('pods'):
-      var pods = projectsAddPods(project, clusterRegion, clusterZone, cluster, data);
-      console.log(pods);
+      var pods = projectsAction('UPDATE_PODS', project, clusterRegion, clusterZone, cluster, data);
       return store.dispatch(pods);
 
     default:
       console.log(`unknown api path: ${apiPath}`)
   }
-
-  //store.dispatch({
-  //  type:          'UPDATE',
-  //  apiPath:       apiPath,
-  //  data:          data,
-  //  project:       project,
-  //  cluster:       cluster,
-  //  clusterRegion: clusterRegion,
-  //  clusterZone:   clusterZone
-  //});
 }
 
 const updaters = (data, store) => {
@@ -92,18 +67,13 @@ const updaters = (data, store) => {
   var apiPaths = [ "nodes", "pods" ];
 
   data.forEach(project => {
-    console.log(`project: ${project["name"]}`)
-
     project.clusters.forEach(cluster => {
-      console.log(`cluster: ${cluster["name"]}`)
-
       apiPaths.forEach(apiPath => {
-        console.log(`updating path: ${apiPath}`);
-
         let clusterPath = `/k8s/${project.name}/${cluster.region}/${cluster.zone}/${cluster.name}/`;
 
-        fetchFromAPI(clusterPath, apiPath)
-          .then(dispatchAction(store, apiPath, project.name, cluster.name, cluster.region, cluster.zone));
+        fetchFromAPI(clusterPath, apiPath);
+        //fetchFromAPI(clusterPath, apiPath)
+        //  .then(dispatchAction(store, apiPath, project.name, cluster.name, cluster.region, cluster.zone));
       });
     });
   });
