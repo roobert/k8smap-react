@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, GridCell, LogoHorizontal } from 'bw-axiom';
-import { ProjectContainer } from './Projects';
+import { ProjectsContainer } from './Projects';
 //import { NodeListContainer } from './NodeList';
 
 import './styles/App.css';
@@ -11,7 +11,7 @@ const App = () =>
     <Grid gutters="large" theme="dark">
       <GridCell width={50}>
         <h1>Projects</h1>
-        <ProjectContainer />
+        <ProjectsContainer />
       </GridCell>
     </Grid>
   </div>

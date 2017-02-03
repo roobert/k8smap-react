@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Project from './Project'
 
-const mapStateToProps = (state) => {
+export const mapStateToProps = (state) => {
   return {
     projects: state.projects
   }
@@ -22,3 +22,4 @@ export const Projects = ({ projects }) => (
 export const ProjectsContainer = connect(
   mapStateToProps,
 )(Projects);
+
