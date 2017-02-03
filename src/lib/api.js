@@ -60,7 +60,6 @@ const updaters = (data, store) => {
   console.log("updating state");
 
   var apiPaths = [ "nodes", "pods" ];
-  //var apiPaths = [ "nodes" ];
 
   data.forEach(project => {
     project.clusters.forEach(cluster => {
