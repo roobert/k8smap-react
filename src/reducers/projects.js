@@ -31,80 +31,40 @@ export default function projects(
 ) {
   switch (action.type) {
     case 'UPDATE_NODES':
-      return state.map(project => {
-        if (project.name === action.payload.project) {
-          console.log(`action: ${JSON.stringify(action)}`);
-          console.log(`found nodes iteration: ${JSON.stringify(project)}`);
+      console.log(state);
 
-          return project.clusters.map(cluster => {
+      state.forEach(function(project) {
+        if (project.name === action.payload.project) {
+          project.clusters.forEach(function(cluster) {
             if ((cluster.region === action.payload.clusterRegion) &&
                (cluster.zone   === action.payload.clusterZone) &&
                (cluster.name   === action.payload.cluster)) {
               cluster['nodes'] = action.payload.data;
               console.log("found nodes to update");
             }
-            return Object.assign({}, cluster);
           });
         }
-        return Object.assign({}, project);
       });
 
-    case 'UPDATE_PODS':
-      return state.map(project => {
-        if (project.name === action.payload.project) {
-          console.log(`action: ${JSON.stringify(action)}`);
-          console.log(`found pods iteration: ${JSON.stringify(project)}`);
+      return state;
 
-          return project.clusters.map(cluster => {
+    case 'UPDATE_PODS':
+      console.log(state);
+
+      state.forEach(function(project) {
+        if (project.name === action.payload.project) {
+          project.clusters.forEach(function(cluster) {
             if ((cluster.region === action.payload.clusterRegion) &&
                (cluster.zone   === action.payload.clusterZone) &&
                (cluster.name   === action.payload.cluster)) {
               cluster['pods'] = action.payload.data;
               console.log("found pods to update");
             }
-            return Object.assign({}, cluster);
           });
         }
-        return Object.assign({}, project);
       });
 
-      //return state;
-
-      //return {
-      //  ...state,
-      //  pods: {
-      //    ...state.pods,
-      //    [action.payload.id]: action.payload.data,
-      //  },
-      //};
-      //return store[action.payload.project]
-
-      //return {
-      //  ...state,
-      //  nodes: {
-      //    [action.payload.id]: action.payload.data,
-      //  },
-      //};
-
-      //console.log("updating store");
-      //let projects = state;
-
-      //return state.map(project => {
-      //  if (project.name === params.project) {
-      //    return project.clusters.map(cluster => {
-      //      [params.clusterRegion]
-
-      //      if ((cluster.region === params.clusterRegion) &&
-      //         (cluster.zone   === params.clusterZone) &&
-      //         (cluster.name   === params.cluster)) {
-      //         cluster[params.apiPath] = params.data;
-      //      }
-      //      return Object.assign({}, cluster);
-      //    });
-      //  }
-      //  return Object.assign({}, project);
-      //});
-      //return state;
+      return state;
 
     default:
       return state;
