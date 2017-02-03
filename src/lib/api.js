@@ -16,7 +16,7 @@ const fetchFromAPI = (clusterPath, apiPath, version = 'stable') => {
 
   console.log(`fetching: ${url}`);
 
-  fetch(url, {
+  return fetch(url, {
     mode: "no-cors",
     method: "GET"
   }).then(function(response) {
@@ -27,7 +27,7 @@ const fetchFromAPI = (clusterPath, apiPath, version = 'stable') => {
     }
   })
   .then(
-    response => response()
+    response => response
   );
 }
 
@@ -45,11 +45,9 @@ function projectsAction(type, project, clusterRegion, clusterZone, cluster, data
 }
 
 const dispatchAction = (store, apiPath, project, cluster, clusterRegion, clusterZone) => data => {
-  console.log("dispatching");
-
   switch(apiPath) {
     case('nodes'):
-      var nodes = projectsAction('UPDATE_NODES', project, clusterRegion, clusterZone, cluster, nodes)
+      var nodes = projectsAction('UPDATE_NODES', project, clusterRegion, clusterZone, cluster, data)
       return store.dispatch(nodes);
 
     case('pods'):
@@ -65,15 +63,15 @@ const updaters = (data, store) => {
   console.log("updating state");
 
   var apiPaths = [ "nodes", "pods" ];
+  //var apiPaths = [ "nodes" ];
 
   data.forEach(project => {
     project.clusters.forEach(cluster => {
       apiPaths.forEach(apiPath => {
         let clusterPath = `/k8s/${project.name}/${cluster.region}/${cluster.zone}/${cluster.name}/`;
 
-        fetchFromAPI(clusterPath, apiPath);
-        //fetchFromAPI(clusterPath, apiPath)
-        //  .then(dispatchAction(store, apiPath, project.name, cluster.name, cluster.region, cluster.zone));
+        fetchFromAPI(clusterPath, apiPath)
+          .then(dispatchAction(store, apiPath, project.name, cluster.name, cluster.region, cluster.zone));
       });
     });
   });

@@ -25,8 +25,6 @@ const projectsInitialState = [
   }
 ]
 
-//const projectsInitialState = {}
-
 export default function projects(
   state = projectsInitialState,
 	action
@@ -34,19 +32,17 @@ export default function projects(
   switch (action.type) {
     case 'UPDATE_NODES':
       return state.map(project => {
-
         if (project.name === action.payload.project) {
-
-          //console.log(`found nodes iteration: ${JSON.stringify(project)}`);
-          console.log(`found nodes iteration`);
+          console.log(`action: ${JSON.stringify(action)}`);
+          console.log(`found nodes iteration: ${JSON.stringify(project)}`);
 
           return project.clusters.map(cluster => {
             if ((cluster.region === action.payload.clusterRegion) &&
                (cluster.zone   === action.payload.clusterZone) &&
                (cluster.name   === action.payload.cluster)) {
-               cluster['nodes'] = action.payload.data;
+              cluster['nodes'] = action.payload.data;
+              console.log("found nodes to update");
             }
-            console.log("found nodes to update");
             return Object.assign({}, cluster);
           });
         }
@@ -54,21 +50,18 @@ export default function projects(
       });
 
     case 'UPDATE_PODS':
-      return;
-      console.log("updating pods");
-
       return state.map(project => {
-        console.log(`found pods iteration: ${JSON.stringify(project)}`);
-
         if (project.name === action.payload.project) {
-          console.log("found pods project to update");
+          console.log(`action: ${JSON.stringify(action)}`);
+          console.log(`found pods iteration: ${JSON.stringify(project)}`);
+
           return project.clusters.map(cluster => {
             if ((cluster.region === action.payload.clusterRegion) &&
                (cluster.zone   === action.payload.clusterZone) &&
                (cluster.name   === action.payload.cluster)) {
-               cluster['pods'] = action.payload.data;
+              cluster['pods'] = action.payload.data;
+              console.log("found pods to update");
             }
-            console.log("found pods to update");
             return Object.assign({}, cluster);
           });
         }
