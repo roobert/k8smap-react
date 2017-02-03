@@ -25,10 +25,7 @@ const fetchFromAPI = (clusterPath, apiPath, version = 'stable') => {
     } else {
       throw new TypeError(`response from url was not type application/json: ${url}`);
     }
-  })
-  .then(
-    response => response
-  );
+  });
 }
 
 function projectsAction(type, project, clusterRegion, clusterZone, cluster, data) {
@@ -41,7 +38,7 @@ function projectsAction(type, project, clusterRegion, clusterZone, cluster, data
        clusterZone:   clusterZone,
        data: data
     },
-	};
+  };
 }
 
 const dispatchAction = (store, apiPath, project, cluster, clusterRegion, clusterZone) => data => {
