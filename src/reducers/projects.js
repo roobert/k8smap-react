@@ -31,8 +31,6 @@ export default function projects(
 ) {
   switch (action.type) {
     case 'UPDATE_NODES':
-      console.log(state);
-
       state.forEach(function(project) {
         if (project.name === action.payload.project) {
           project.clusters.forEach(function(cluster) {
@@ -40,7 +38,6 @@ export default function projects(
                (cluster.zone   === action.payload.clusterZone) &&
                (cluster.name   === action.payload.cluster)) {
               cluster['nodes'] = action.payload.data;
-              console.log("found nodes to update");
             }
           });
         }
@@ -49,8 +46,6 @@ export default function projects(
       return state;
 
     case 'UPDATE_PODS':
-      console.log(state);
-
       state.forEach(function(project) {
         if (project.name === action.payload.project) {
           project.clusters.forEach(function(cluster) {
@@ -58,7 +53,6 @@ export default function projects(
                (cluster.zone   === action.payload.clusterZone) &&
                (cluster.name   === action.payload.cluster)) {
               cluster['pods'] = action.payload.data;
-              console.log("found pods to update");
             }
           });
         }
