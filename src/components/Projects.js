@@ -22,4 +22,3 @@ export const Projects = ({ projects }) => (
 export const ProjectsContainer = connect(
   mapStateToProps,
 )(Projects);
-
